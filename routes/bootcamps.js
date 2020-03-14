@@ -1,28 +1,25 @@
 const express = require('express');
+// Destructuring
+const {
+  deleteBootcamp,
+  createBootcamp,
+  updateBootcamp,
+  getBootcamps,
+  getBootcamp
+} = require('../controllers/bootcamps');
+
+//Express has to be called router in alternative modules (not the main one - server.js).
 const router = express.Router();
 
-router.get('/', (req, res) => {
-  res.status(200).json({success: true, msg: 'Show All Bootcamps'});
-});
+router
+  .route('/')
+  .get(getBootcamps)
+  .post(createBootcamp);
 
-router.get('/:id', (req, res) => {
-  res.status(200).json({success: true, msg: `Show bootcamp ${req.params.id}`});
-});
-
-router.post('/', (req, res) => {
-  res.status(200).json({success: true, msg: 'Create A New Bootcamp'});
-});
-
-router.put('/:id', (req, res) => {
-  res
-    .status(200)
-    .json({success: true, msg: `Update bootcamp ${req.params.id}`});
-});
-
-router.delete('/:id', (req, res) => {
-  res
-    .status(200)
-    .json({success: true, msg: `Delete Bootcamp ${req.params.id}`});
-});
+router
+  .route('/:id')
+  .put(updateBootcamp)
+  .get(getBootcamp)
+  .delete(deleteBootcamp);
 
 module.exports = router;
