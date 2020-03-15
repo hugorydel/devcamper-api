@@ -26,7 +26,7 @@ exports.getBootcamp = async (req, res, next) => {
     }
     res.status(200).json({success: true, data: bootcamp});
   } catch (err) {
-    //Usage description of next explained above app.use(errorHandler) in server.js folder
+    //Usage description of next(err) explained above app.use(errorHandler) in server.js folder
     next(err);
     //OLD WAY => res.status(400).json({success: false});
     //We have access to next because we put it as an input variable for our (x, y, next) =>
