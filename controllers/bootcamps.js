@@ -1,3 +1,4 @@
+const ErrorResponse = require('../utils/errorResponse');
 const Bootcamp = require('../models/Bootcamp');
 
 // Description  -- Get All Bootcamps
@@ -19,18 +20,20 @@ exports.getBootcamps = async (req, res, next) => {
 exports.getBootcamp = async (req, res, next) => {
   try {
     const bootcamp = await Bootcamp.findById(req.params.id);
-
     //Makes it so as if the bootcamp id is correctly formatted but doesn't have any bootcamp pertaining to it, then the code returns false instead of true + no data
     if (!bootcamp) {
       return res.status(400).json({success: false});
     }
     res.status(200).json({success: true, data: bootcamp});
   } catch (err) {
+    //Usage description of next explained above app.use(errorHandler) in server.js folder
+    next(err);
     //OLD WAY => res.status(400).json({success: false});
     //We have access to next because we put it as an input variable for our (x, y, next) =>
-
     //The next(err) finds middleware functions in server.js (app.use(errorHandler) in this instance, and it turns them on)
-    next(err);
+    // next(
+    //   new ErrorResponse(`Bootcamp not found with id of ${req.params.id}`, 404)
+    // );
   }
 };
 // Description  -- Create New Bootcamp

@@ -20,7 +20,7 @@ const BootcampSchema = new mongoose.Schema({
   website: {
     type: String,
     match: [
-      //From Stack Overflow https://stackoverflow.com/questions/46155/how-to-validate-an-email-address-in-javascript, makes sure that the URL starts with HTTP/HTTPS
+      //From Stack Overflow https://stackoverflow.com/questions/46155/how-to-validate-an-email-address-in-javascript, makes sure that the URL starts with HTTP/HTTPS and is a valid URL Overall.
       /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/,
       'Please Use A Valid URL With HTTP or HTTPS'
     ]
@@ -62,18 +62,18 @@ const BootcampSchema = new mongoose.Schema({
   //     formattedAddress: String,
   //     formattedAddress: String
   //   },
-  //   careers: {
-  //     type: [String],
-  //     required: true,
-  //     enum: [
-  //       'Web Development',
-  //       'Mobile Development',
-  //       'UI/UX',
-  //       'Data Science',
-  //       'Business',
-  //       'Other'
-  //     ]
-  //   },
+  careers: {
+    type: [String],
+    required: true,
+    enum: [
+      'Web Development',
+      'Mobile Development',
+      'UI/UX',
+      'Data Science',
+      'Business',
+      'Other'
+    ]
+  },
   averageRating: {
     type: Number,
     min: [1, 'Rating Must Be At Least 1'],

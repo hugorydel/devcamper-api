@@ -27,7 +27,8 @@ if (process.env.NODE_ENV === 'development') {
 //Mounts routers - all routers will have this attached to beggining. Attaches the "text" thing before each bootcamps route originally from the routes folder.
 app.use('/api/v1/bootcamps', bootcamps);
 
-//Uses the error.js custom middleware module to log errors for bootcamp controllers in bootcamps.js that have a next(err)
+//Uses the error.js custom middleware module to log errors for bootcamp controllers most often originating from bootcamps.js that have a next(err) as their catch.
+// The next(err) in bootcamps (example:getBootcamps) is used in the code as the next references the next middleware, the one below. err is put inside the next as the errorHandler requires an err to execute properly (it executes only when an error occurs of course)
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
