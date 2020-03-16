@@ -5,11 +5,14 @@ const {
   createBootcamp,
   updateBootcamp,
   getBootcamps,
-  getBootcamp
+  getBootcamp,
+  getBootcampsInRadius
 } = require('../controllers/bootcamps');
 
 //Express has to be called router in alternative modules (not the main one - server.js).
 const router = express.Router();
+
+router.route('/radius/:zipcode/:distance').get(getBootcampsInRadius);
 
 router
   .route('/')

@@ -24,7 +24,7 @@ if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }
 
-//Mounts routers - all routers will have this attached to beggining. Attaches the "text" thing before each bootcamps route originally from the routes folder.
+//Mounts routers - all routers will have this attached to beggining. Attaches the "/api/v1/bootcamps" thing before each bootcamps route originally from the routes folder.
 app.use('/api/v1/bootcamps', bootcamps);
 
 //Uses the error.js custom middleware module to log errors for bootcamp controllers most often originating from bootcamps.js that have a next(err) as their catch.
