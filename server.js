@@ -13,6 +13,7 @@ connectDB();
 
 //Route files
 const bootcamps = require('./routes/bootcamps');
+const courses = require('./routes/courses');
 
 const app = express();
 
@@ -24,8 +25,9 @@ if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }
 
-//Mounts routers - all routers will have this attached to beggining. Attaches the "/api/v1/bootcamps" thing before each bootcamps route originally from the routes folder.
+//Mounts routers - all specified routers will have this attached to beggining. Attaches the "/api/v1/bootcamps" thing before each bootcamps route originally from the routes folder.
 app.use('/api/v1/bootcamps', bootcamps);
+app.use('/api/v1/courses', courses);
 
 //Uses the error.js custom middleware module to log errors for bootcamp controllers most often originating from bootcamps.js that have a next(err) as their catch.
 // The next(err) in bootcamps (example:getBootcamps) is used in the code as the next references the next middleware, the one below. err is put inside the next as the errorHandler requires an err to execute properly (it executes only when an error occurs of course)
