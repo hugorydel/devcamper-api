@@ -45,4 +45,42 @@ const CourseSchema = new mongoose.Schema({
   }
 });
 
+// Static method to get avg of course tuitions
+CourseSchema.statics.getAverageCost = async function(bootcampId) {
+  //returns promise so must be await. Should return an object with the id of the bootcamp and the average cost of the tuition
+  const obj = await this.aggregate([
+    {
+      //bootcamp means the above field and btw it matches all bootcamp objects (and their course objects) with the bootcamp = bootcampId
+      $match: {bootcamp: bootcampId}
+    },
+    {
+      $group: {
+        _id: '$bootcamp',
+        averageCost: {$avg: '$tuition'}
+      }
+    }
+  ]);
+
+  try {
+    //Grabbing the Bootcamp model finding bootcamp by bootcampId (created by Mongo)
+    await this.model('Bootcamp').findByIdAndUpdate(bootcampId, {
+      averageCost: Math.round(obj[0].averageCost)
+    });
+  } catch (err) {
+    console.error(err);
+  }
+  // Returns average cost as an array in the console - console.log(obj);
+};
+
+//Call getAverageCost after saving
+CourseSchema.post('save', function() {
+  //because we are on the CourseSchema model this will refer to the CourseSchema. When we call the getAverageCost method and say this.bootcamp we are refering to the specified course's bootcamp (which cointains the id of the Bootcamp it refers to).
+  this.constructor.getAverageCost(this.bootcamp);
+});
+
+//Call averageCost before removing
+CourseSchema.pre('remove', function() {
+  this.constructor.getAverageCost(this.bootcamp);
+});
+
 module.exports = mongoose.model('Course', CourseSchema);

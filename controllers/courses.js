@@ -9,37 +9,19 @@ const asyncHandler = require('../middleware/async');
 // Route        -- GET /api/v1/bootcamps/:bootcampId/courses
 // Access       -- Public
 exports.getCourses = asyncHandler(async (req, res, next) => {
-  let query;
   // The below if statement finds specific courses corresponding to the bootcampId (belonging to the bootcamp).
   if (req.params.bootcampId) {
     //Finds specific course
     //Returns a promise
-    query = Course.find({bootcamp: req.params.bootcampId});
+    const courses = await Course.find({bootcamp: req.params.bootcampId});
+    return res
+      .status(200)
+      .json({success: true, count: courses.length, data: courses});
   }
   // The below else is the "get all courses" option
   else {
-    //Finds all courses
-    //The populate works to give us the whole object with the given ID because in our course model we've defined that the bootcamp object has a type mongoose.Schema.Types.Object referencing the model Bootcamp (with the usage of ref: Bootcamp). This means that when we call populate the bootcamp object we are actually calling the data of the Bootcamp with the given ID (the ID that corresponds to the course). In summary, the populate calls the specific courses' "bootcamp" object which then, because it has a mongoose.Schema.ObjectId corresponding to some Bootcamp Id, goes to the database and takes the Bootcamp with the given -ObjectId. It knows which model to take because we've ref(renced) it using the path: "bootcamp". Finally, when the refferenced model's bootcamp is found it is then put in the bootcamp object (bootcamp: data).
-    //Its actually that the bootcamp path already has the id to the corresponding Bootcamp and we're just calling that bootcamp which then references the Bootcamp with the given ID. Only then are we selecting only the Bootcamp's name and description - otherwise the whole Bootcamp would've been selected
-    query = Course.find().populate({
-      path: 'bootcamp',
-      select: 'name description'
-    });
+    res.status(200).json(res.advancedResults);
   }
-  const courses = await query;
-
-  //We put await here because we are awaiting for the bootcamp promise to actually be fulfilled or its null alternative -all courses given- to be set.
-  //This is a different way to the one above (beggining with let query; and ending with const courses = await query;) it however doesn't work with more complex parts such as the .populate()
-
-  // const courses = await Course.find(
-  //   req.params.bootcampId ? {bootcamp: req.params.bootcampId} : null
-  // );
-
-  res.status(200).json({
-    success: true,
-    count: courses.length,
-    data: courses
-  });
 });
 
 // Description  -- Get single Courses
