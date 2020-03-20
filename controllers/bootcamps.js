@@ -34,6 +34,21 @@ exports.getBootcamp = asyncHandler(async (req, res, next) => {
 // Route        -- POST /api/v1/bootcamps
 // Access       -- Private
 exports.createBootcamp = asyncHandler(async (req, res, next) => {
+  //Add user to req.body
+  //The logged in user will created bootcamps so we already have access to the user.id of the user
+  req.body.user = req.user.id;
+
+  //Check published bootcamps to see if publisher is making the first or trying to make the second bootcamp
+  const publishedBootcamp = await Bootcamp.findOne({user: req.user.id});
+  //If user is not an admin, they can only add one bootcamp
+  if (publishedBootcamp && req.user.role !== 'admin') {
+    return next(
+      new ErrorResponse(
+        `User with Id ${req.user.id} has already published a bootcamp`,
+        400
+      )
+    );
+  }
   // This goes to the bootcamp model (Bootcamp is its shorter name) and it creates new bootcamp data based on the body of the users' requests
   const bootcamp = await Bootcamp.create(req.body);
   res.status(201).json({
@@ -45,11 +60,7 @@ exports.createBootcamp = asyncHandler(async (req, res, next) => {
 // Route        -- PUT /api/v1/bootcamps/:id
 // Access       -- Private
 exports.updateBootcamp = asyncHandler(async (req, res, next) => {
-  const bootcamp = await Bootcamp.findByIdAndUpdate(req.params.id, req.body, {
-    new: true,
-    //If hovered tells what it does. In summary, it checks the req bootcamp by id update against the Bootcamp model schema and validates if it indeed follows the requirements
-    runValidators: true
-  });
+  let bootcamp = await Bootcamp.findById(req.params.id);
 
   //Makes shure that the bootcamp exists in the first place, only then returning a success value and data (instead of just giving a success value without the data when an id with a correct length is input that doesn't correspond to any bootcamp)
   if (!bootcamp) {
@@ -57,6 +68,23 @@ exports.updateBootcamp = asyncHandler(async (req, res, next) => {
       new ErrorResponse(`Bootcamp not found with id of ${req.params.id}`, 404)
     );
   }
+
+  //Make sure user is the bootcamp owner
+  //bootcamp.user gives us a typeof ObjectId but we want it to be a string as the req.user.id is a string
+  if (bootcamp.user.toString() !== req.user.id && 'admin') {
+    return next(
+      new ErrorResponse(
+        `User ${req.params.id} is not authorized to update this bootcamp`,
+        401
+      )
+    );
+  }
+
+  bootcamp = await Bootcamp.findOneAndUpdate(req.params.id, req.body, {
+    new: true,
+    //If hovered tells what it does. In summary, it checks the req bootcamp by id update against the Bootcamp model schema and validates if it indeed follows the requirements
+    runValidators: true
+  });
 
   res.status(200).json({success: true, data: bootcamp});
 });
@@ -69,6 +97,17 @@ exports.deleteBootcamp = asyncHandler(async (req, res, next) => {
   if (!bootcamp) {
     return next(
       new ErrorResponse(`Bootcamp not found with id of ${req.params.id}`, 404)
+    );
+  }
+
+  //Make sure user is the bootcamp owner
+  //bootcamp.user gives us a typeof ObjectId but we want it to be a string as the req.user.id is a string
+  if (bootcamp.user.toString() !== req.user.id && 'admin') {
+    return next(
+      new ErrorResponse(
+        `User ${req.params.id} is not authorized to update this bootcamp`,
+        401
+      )
     );
   }
 
@@ -116,6 +155,15 @@ exports.bootcampPhotoUpload = asyncHandler(async (req, res, next) => {
   if (!bootcamp) {
     return next(
       new ErrorResponse(`Bootcamp not found with id of ${req.params.id}`, 404)
+    );
+  }
+
+  if (bootcamp.user.toString() !== req.user.id && 'admin') {
+    return next(
+      new ErrorResponse(
+        `User ${req.params.id} is not authorized to update this bootcamp`,
+        401
+      )
     );
   }
 

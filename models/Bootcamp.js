@@ -53,6 +53,7 @@ const BootcampSchema = new mongoose.Schema(
       coordinates: {
         type: [Number],
         index: '2dsphere'
+        //https://docs.mongodb.com/manual/core/2dsphere/
       },
       formattedAddress: String,
       street: String,
@@ -102,6 +103,12 @@ const BootcampSchema = new mongoose.Schema(
     createdAt: {
       type: Date,
       default: Date.now
+    },
+    user: {
+      //Associates user with a bootcamp
+      type: mongoose.Schema.ObjectId,
+      ref: 'User',
+      required: true
     }
   },
   //This is required to create a reverse populate object

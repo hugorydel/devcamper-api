@@ -5,6 +5,7 @@ const morgan = require('morgan');
 // Adds colors to terminal logs
 const colors = require('colors');
 const fileupload = require('express-fileupload');
+const cookieParser = require('cookie-parser');
 const errorHandler = require('./middleware/error');
 const connectDB = require('./config/db');
 // Load env vars
@@ -22,6 +23,9 @@ const app = express();
 
 // Body Parser
 app.use(express.json());
+
+//Add middleware cookie-parser
+app.use(cookieParser());
 
 //Developer logging middleware. Visually useful, also says how long an operation took
 if (process.env.NODE_ENV === 'development') {

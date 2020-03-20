@@ -1,6 +1,7 @@
 const ErrorResponse = require('../utils/errorResponse');
 const Course = require('../models/Course');
 const Bootcamp = require('../models/Bootcamp');
+const User = require('../models/User');
 const asyncHandler = require('../middleware/async');
 
 // Description  -- Get All Courses
@@ -51,8 +52,10 @@ exports.getCourse = asyncHandler(async (req, res, next) => {
 // Access       -- Private
 
 exports.addCourse = asyncHandler(async (req, res, next) => {
-  //The bootcampId has to already be a viable bootcampId, or error, so when we equal it to the bootcamp object (originating from the Course). When our :bootcampId gets submitted into the Course model it will reference a bootcamp with the same id as our course. mongoose.Schema.ObjectId in the course is replaced by the req.params.bootcampId. Because a bootcamp path is required setting this is important (assuming that you won't put that in as an object)
+  //The bootcampId has to already be a viable bootcampId, or error, so when we equal it to the bootcamp object (originating from the Course collection). When our :bootcampId gets submitted into the Course model it will reference a bootcamp with the same id as our course. mongoose.Schema.ObjectId in the course is replaced by the req.params.bootcampId. Because a bootcamp path is required setting this is important (assuming that you won't put that in as an object)
   req.body.bootcamp = req.params.bootcampId;
+  //Req.user.id already exists in the query after we've logged in. Here, we're setting it equal to the current model's ObjectId, originating from the Course collection.
+  req.body.user = req.user.id;
 
   //We have the bootcamp variable here purely because we need to verify that there is in fact a bootcamp that corresponds to the id we input
   const bootcamp = await Bootcamp.findById(req.params.bootcampId);
@@ -62,6 +65,15 @@ exports.addCourse = asyncHandler(async (req, res, next) => {
       new ErrorResponse(
         `The bootcamp with the id ${req.params.id} does not exist`,
         404
+      )
+    );
+  }
+
+  if (bootcamp.user.toString() !== req.user.id && req.user.role !== 'admin') {
+    return next(
+      new ErrorResponse(
+        `User ${req.user.id} is not authorized to add a course to bootcamp ${bootcamp._id}`,
+        401
       )
     );
   }
