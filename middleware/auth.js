@@ -36,7 +36,7 @@ exports.protect = asyncHandler(async (req, res, next) => {
 
     // Whatever user is currently being decoded/logged in/registered is the req user
     req.user = await User.findById(decoded.id);
-    console.log(req.user);
+    console.log(req.user.role);
     next();
   } catch (err) {
     return next(
@@ -50,10 +50,12 @@ exports.authorize = (...roles) => {
   return (req, res, next) => {
     //Each user has a role property
     if (!roles.includes(req.user.role)) {
-      return new ErrorResponse(
-        `Role ${req.user.role} is not authorized to access this route`,
-        //403 is a "forbidden" error
-        403
+      return next(
+        new ErrorResponse(
+          `Role ${req.user.role} is not authorized to access this route`,
+          //403 is a "forbidden" error
+          403
+        )
       );
     }
     next();

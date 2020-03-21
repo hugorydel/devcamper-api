@@ -35,7 +35,8 @@ exports.getBootcamp = asyncHandler(async (req, res, next) => {
 // Access       -- Private
 exports.createBootcamp = asyncHandler(async (req, res, next) => {
   //Add user to req.body
-  //The logged in user will created bootcamps so we already have access to the user.id of the user
+  //A logged in user called req.user will create bootcamps so we already have access to the user id of that user
+  //The body.user, before the below action is completed, is looking for a user's id as in the model it references "User". When this action is done the bootcamp and the user with the specified id are "connected", the Bootcamp instance contains the id of the user in its object named "user".
   req.body.user = req.user.id;
 
   //Check published bootcamps to see if publisher is making the first or trying to make the second bootcamp
@@ -51,6 +52,7 @@ exports.createBootcamp = asyncHandler(async (req, res, next) => {
   }
   // This goes to the bootcamp model (Bootcamp is its shorter name) and it creates new bootcamp data based on the body of the users' requests
   const bootcamp = await Bootcamp.create(req.body);
+
   res.status(201).json({
     success: true,
     data: bootcamp

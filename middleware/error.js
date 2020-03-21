@@ -3,10 +3,10 @@ const ErrorResponse = require('../utils/errorResponse');
 const errorHandler = (err, req, res, next) => {
   //spreads ( ... = spreader ) all the properties of err into the error variable
   // the error is created as it will act as a separate entity - one that gets updated accordingly based on the situation as in the Mongoose Bad ObjectID if statement
-
   let error = {...err};
-
   error.message = err.message;
+  //Returns the whole error message to the console
+  console.log(err);
   //In a case where the error message isn't taken care of (modified) by the if statements below, the error message will be a default err.message set by Express
 
   // Log To Console for developer

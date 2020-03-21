@@ -1,5 +1,12 @@
 const express = require('express');
-const {register, login, getMe} = require('../controllers/auth');
+const {
+  register,
+  login,
+  getMe,
+  forgotPassword,
+  resetPassword,
+  updateDetails
+} = require('../controllers/auth');
 
 const router = express.Router();
 
@@ -9,5 +16,9 @@ router.post('/register', register);
 router.post('/login', login);
 //This get request requires protect middleware because upon execution that middleware leaves a req.user variable which has an id we need to have
 router.get('/me', protect, getMe);
+router.put('/updatedetails', protect, updateDetails);
+//This get request gives the user an opportunity to reset their password
+router.post('/forgotpassword', forgotPassword);
+router.put('/resetpassword/:resettoken', resetPassword);
 
 module.exports = router;
