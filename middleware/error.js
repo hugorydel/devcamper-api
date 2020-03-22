@@ -5,22 +5,18 @@ const errorHandler = (err, req, res, next) => {
   // the error is created as it will act as a separate entity - one that gets updated accordingly based on the situation as in the Mongoose Bad ObjectID if statement
   let error = {...err};
   error.message = err.message;
-  //Returns the whole error message to the console
+  //Returns the whole error message to the console. This makes everything so much easier!
   console.log(err);
-  //In a case where the error message isn't taken care of (modified) by the if statements below, the error message will be a default err.message set by Express
-
-  // Log To Console for developer
-  //Logs the entire error so you can see all the necessary info to then make a error catcher (if statements below)  --temporarily here-- console.log(err);
 
   // Mongoose Bad ObjectID
   if (err.name === 'CastError') {
-    const message = `Resource not found`;
+    const message = `Resource not found with id of ${err.value}`;
     error = new ErrorResponse(message, 404);
   }
 
   //Mongoose Duplicate Error
   if (err.code === 11000) {
-    const message = `This name already exists`;
+    const message = `Duplicate Error`;
     error = new ErrorResponse(message, 400);
   }
 

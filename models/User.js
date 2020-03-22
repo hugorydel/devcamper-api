@@ -67,6 +67,8 @@ UserSchema.methods.getSignedJwtToken = function() {
 UserSchema.methods.matchPassword = async function(enteredPassword) {
   //.this usage lecture 48
   //This method is called on the existing user object and so this.password refers to the hashed password of the existing user.
+  //mind that the enteredPassword should be a string
+  enteredPassword = enteredPassword.toString();
   return await bcrypt.compare(enteredPassword, this.password);
 };
 

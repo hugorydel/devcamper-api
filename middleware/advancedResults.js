@@ -3,7 +3,7 @@ const advancedResults = (model, populate) => async (req, res, next) => {
 
   //Copy request.query
   const reqQuery = {...req.query};
-
+  //console.log(reqQuery);
   //Fields that should be excluded form the sorting and selecting operations below
   const removeFields = ['select', 'sort', 'page', 'limit'];
 
@@ -14,6 +14,7 @@ const advancedResults = (model, populate) => async (req, res, next) => {
   //Creating a query string
   let queryStr = JSON.stringify(reqQuery);
   // console.log(queryStr);
+  //console.log(queryStr);
   //The above console.log should give the query which in the case xxx?averageCost[lte]=10000 should be {"averageCost": {"lte": "10000"}}
   //The X in the replace(X) represents the search Value we want (something greater than, or greater than or equal to, etc. + in searches lists). In a \b boundary \b the things inside it must form a word of their own. /g checks all instances of what we want not just the first one.
   //Creating operators such as $gt, $gte, etc.
@@ -22,13 +23,15 @@ const advancedResults = (model, populate) => async (req, res, next) => {
     /*We put the money sign in front of the matching query because only then will it be accepted as a mongoose operator thus we change simply match into...*/ match =>
       `$${match}`
   );
-  // console.log(queryStr); -- should be an operator with $ in front now
+  //console.log(queryStr);
+  // -- should be an operator with $ in front now
 
   //find only accepts objects so you need to change the previously JSON text into a JS object
   // Finiding specified resource
   // When we populate the Bootcamp with the courses virtual we are adding, to each bootcamp, courses that have the same id as the bootcamp
   //when you call populate("courses") on the Bootcamp model you are referencing a virtual object which when its path is called does what it does (reference Bootcamp.js ctrlf BootcampSchema.virtual())
   query = model.find(JSON.parse(queryStr));
+  //console.log(JSON.parse(queryStr));
   //When we do select="whatever" and then when we find it as req.query.select the select acts as a key to value "whatever". console.log(req.query.select); should return the values of the key "select".
 
   //Select Fields

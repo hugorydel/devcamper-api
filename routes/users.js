@@ -1,14 +1,14 @@
 const express = require('express');
 // Destructuring
 const {
-  getCourses,
-  getCourse,
-  addCourse,
-  updateCourse,
-  deleteCourse
-} = require('../controllers/courses');
+  getUsers,
+  getUser,
+  createUser,
+  updateUser,
+  deleteUser
+} = require('../controllers/users');
 
-const Course = require('../models/Course');
+const User = require('../models/User');
 
 //enabling mergeParams enables us to access the parent parameters - bootcamps.js, because it routes to courses. This means that now we can access all courses associated with a specific bootcamp. The merge parameter merges the URL's of 2 routes the bootcamps and the courses.
 const router = express.Router({mergeParams: true});
@@ -17,22 +17,20 @@ const router = express.Router({mergeParams: true});
 const {protect, authorize} = require('../middleware/auth');
 const advancedResults = require('../middleware/advancedResults');
 
+//All routes will only accept admins using authorization route and only be accesible when they're logged in using the protect route. We can do this by just making it so the routers below all use protect and authorize with the use of use()
+
+router.use(protect);
+router.use(authorize('admin'));
+
 router
   .route('/')
-  .get(
-    advancedResults(Course, {
-      path: 'bootcamp',
-      select: 'name description'
-    }),
-    getCourses
-  )
-  //The post is on this route because we directed it here using hte bootcamps route and so it already has /:bootcampId/courses in its URL when it arrives at the point of being able to be called back.
-  .post(protect, authorize('publisher', 'admin'), addCourse);
+  .get(advancedResults(User), getUsers)
+  .post(createUser);
 
 router
   .route('/:id')
-  .get(getCourse)
-  .put(protect, authorize('publisher', 'admin'), updateCourse)
-  .delete(protect, authorize('publisher', 'admin'), deleteCourse);
+  .get(getUser)
+  .put(updateUser)
+  .delete(deleteUser);
 
 module.exports = router;

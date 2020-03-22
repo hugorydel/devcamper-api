@@ -94,6 +94,7 @@ exports.updateDetails = asyncHandler(async (req, res, next) => {
 exports.updatePassword = asyncHandler(async (req, res, next) => {
   const user = await User.findById(req.user.id).select('+password');
 
+  //console.log(user);
   //Check if given password matches user's password
   //You can enable asynchronous functions in if statements by putting brackets around them
   if (!(await user.matchPassword(req.body.currentPassword))) {
@@ -101,10 +102,9 @@ exports.updatePassword = asyncHandler(async (req, res, next) => {
   }
 
   user.password = req.body.newPassword;
-  await user.save(user, 200, res);
-
+  await user.save();
   //For the updatePassword to be functional (don't have to login again) you should send this at it immediately returns a valid token that enables you to do thing.
-  sendTokenResponse();
+  sendTokenResponse(user, 200, res);
 });
 
 // Description  -- Forgot password
