@@ -60,13 +60,13 @@ ReviewSchema.statics.getAverageRating = async function(bootcampId) {
 };
 
 //Call getAverageRating after saving any review
-ReviewSchema.post('save', function() {
-  this.constructor.getAverageRating(this.bootcamp);
+ReviewSchema.post('save', async function() {
+  await this.constructor.getAverageRating(this.bootcamp);
 });
 
 //Call getAverageRating before removing a review
-ReviewSchema.pre('remove', function() {
-  this.constructor.getAverageRating(this.bootcamp);
+ReviewSchema.post('remove', async function() {
+  await this.constructor.getAverageRating(this.bootcamp);
 });
 
 //Makes it so as you can only add, with the usage of the ReviewSchema, one review per bootcamp as a user.

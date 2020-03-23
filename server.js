@@ -1,14 +1,25 @@
 const path = require('path');
 const express = require('express');
+//Enables dotenv files to be used and configured
 const dotenv = require('dotenv');
 const morgan = require('morgan');
 // Adds colors to terminal logs
 const colors = require('colors');
 const fileupload = require('express-fileupload');
 const cookieParser = require('cookie-parser');
+//Protection Middleware
+const mongoSanitize = require('express-mongo-sanitize');
+const helmet = require('helmet');
+const xss = require('xss-clean');
+const rateLimit = require('express-rate-limit');
+const hpp = require('hpp');
+//Cross Origin Resource Sharing
+const cors = require('cors');
+//Importing
 const errorHandler = require('./middleware/error');
 const connectDB = require('./config/db');
-// Load env vars
+
+// Load env vars to Node Process
 dotenv.config({path: './config/config.env'});
 
 //connect to database
@@ -36,6 +47,29 @@ if (process.env.NODE_ENV === 'development') {
 
 //File uploading
 app.use(fileupload());
+
+//Sanitize data, prevent hacking
+app.use(mongoSanitize());
+
+//Further protect data. Set security headers - they prevent vulnerabilities when doing stuff on our service.
+app.use(helmet());
+
+//Prevents any scripts (such as js that gives all data to attacker) from being passed into our data boxes. This prevents cross site scripting attacks (xss attacks)
+app.use(xss());
+
+//Rate of request you can do. Prevents spamming.
+app.use(
+  rateLimit({
+    windowMs: 10 * 60 * 1000, // 10 mins
+    max: 80
+  })
+);
+
+//Prevent http parameter pollution
+app.use(hpp());
+
+//Enable CORS
+app.use(cors());
 
 // Set public as a static folder (dirname is all the folder routes we entered up until this point)
 app.use(express.static(path.join(__dirname, 'public')));
